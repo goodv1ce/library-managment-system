@@ -2,7 +2,7 @@ package ua.goodvice.easylib.easylib.communicator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -12,9 +12,9 @@ import ua.goodvice.easylib.easylib.entity.Book;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class RestBookCommunicator {
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     public List<Book> getAllBooks() {
         ResponseEntity<List<Book>> responseEntity = restTemplate.exchange("http://localhost:8080/api/books"
@@ -42,8 +42,6 @@ public class RestBookCommunicator {
 
         HttpEntity<String> request = new HttpEntity<>(postDataJSON, headers);
         String response = restTemplate.postForObject("http://localhost:8080/api/books", request, String.class);
-        System.out.println("info");
-        System.out.println(response);
     }
 
 }

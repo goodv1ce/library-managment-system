@@ -30,7 +30,8 @@ public class Config implements WebMvcConfigurer {
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor("admin", "admin"));
+        restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor("andriy.lysak.2003@gmail.com",
+                "andriY4367605"));
         return restTemplate;
     }
 

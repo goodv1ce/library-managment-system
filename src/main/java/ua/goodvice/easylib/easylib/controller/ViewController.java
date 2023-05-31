@@ -1,18 +1,21 @@
 package ua.goodvice.easylib.easylib.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.goodvice.easylib.easylib.communicator.RestBookCommunicator;
+import ua.goodvice.easylib.easylib.communicator.RestUserCommunicator;
 import ua.goodvice.easylib.easylib.entity.Book;
+import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
 
 @Controller
 @RequestMapping("/")
+@RequiredArgsConstructor
 public class ViewController {
-    @Autowired
-    private RestBookCommunicator restBookCommunicator;
+    private final RestBookCommunicator restBookCommunicator;
+    private final RestUserCommunicator restUserCommunicator;
 
     @GetMapping("/")
     public String showStartPage() {
@@ -34,6 +37,18 @@ public class ViewController {
     @PostMapping("/donate")
     public String addBookAndRedirect(@ModelAttribute Book book) throws JsonProcessingException {
         restBookCommunicator.addBook(book);
+        return "redirect:/";
+    }
+
+    @GetMapping("/login")
+    public String showLoginPage(Model model) {
+        model.addAttribute("authenticationRequest", new AuthenticationRequest());
+        return "login-page";
+    }
+
+    @PostMapping("/login")
+    public String loginAndRedirect(@ModelAttribute AuthenticationRequest authenticationRequest) throws JsonProcessingException {
+        restUserCommunicator.login(authenticationRequest);
         return "redirect:/";
     }
 }
