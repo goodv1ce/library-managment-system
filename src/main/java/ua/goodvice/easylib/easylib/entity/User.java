@@ -20,7 +20,7 @@ import java.util.List;
  * @version 1.0
  */
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Data
 @Builder
 @NoArgsConstructor
