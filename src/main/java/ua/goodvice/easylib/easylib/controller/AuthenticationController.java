@@ -29,7 +29,6 @@ public class AuthenticationController {
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, jwtService.generateJwtTokenCookie(response.getToken()))
-                .header(HttpHeaders.AUTHORIZATION, response.getToken())
                 .body(response);
     }
 
@@ -41,7 +40,6 @@ public class AuthenticationController {
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, jwtService.generateJwtTokenCookie(response.getToken()))
-                .header(HttpHeaders.AUTHORIZATION, response.getToken())
                 .body(response);
     }
 }

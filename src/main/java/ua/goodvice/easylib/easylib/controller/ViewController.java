@@ -1,7 +1,12 @@
 package ua.goodvice.easylib.easylib.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +14,7 @@ import ua.goodvice.easylib.easylib.communicator.RestBookCommunicator;
 import ua.goodvice.easylib.easylib.communicator.RestUserCommunicator;
 import ua.goodvice.easylib.easylib.entity.Book;
 import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
+import ua.goodvice.easylib.easylib.security.AuthenticationResponse;
 
 @Controller
 @RequestMapping("/")
@@ -23,8 +29,8 @@ public class ViewController {
     }
 
     @GetMapping("/catalogue")
-    public String showBookCatalogue(Model model) {
-        model.addAttribute("bookList", restBookCommunicator.getAllBooks());
+    public String showBookCatalogue(Model model, HttpServletRequest httpServletRequest) {
+        model.addAttribute("bookList", restBookCommunicator.getAllBooks(httpServletRequest));
         return "catalogue";
     }
 
@@ -35,8 +41,9 @@ public class ViewController {
     }
 
     @PostMapping("/donate")
-    public String addBookAndRedirect(@ModelAttribute Book book) throws JsonProcessingException {
-        restBookCommunicator.addBook(book);
+    public String addBookAndRedirect(@ModelAttribute Book book, HttpServletRequest httpServletRequest)
+            throws JsonProcessingException {
+        restBookCommunicator.addBook(book, httpServletRequest);
         return "redirect:/";
     }
 
@@ -47,8 +54,18 @@ public class ViewController {
     }
 
     @PostMapping("/login")
-    public String loginAndRedirect(@ModelAttribute AuthenticationRequest authenticationRequest) throws JsonProcessingException {
-        restUserCommunicator.login(authenticationRequest);
+    public String loginAndRedirect(@ModelAttribute AuthenticationRequest authenticationRequest,
+                                   HttpServletResponse response) {
+        ResponseEntity<AuthenticationResponse> responseEntity =
+                restUserCommunicator.login(authenticationRequest);
+        String cookies = (responseEntity.getHeaders().getFirst(HttpHeaders.SET_COOKIE));
+        String jwt;
+        if (cookies != null) {
+            jwt = cookies.substring(cookies.indexOf("user-id=") + 8, cookies.indexOf(";"));
+        } else {
+            jwt = ""; // todo implement
+        }
+        response.addCookie(new Cookie("user-id", jwt));
         return "redirect:/";
     }
 }

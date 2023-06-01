@@ -76,6 +76,7 @@ public class JwtService {
         return ResponseCookie.from("user-id", token)
                 .maxAge(getTokenExpInSeconds(token))
                 .httpOnly(true)
+                .secure(true)
                 .path("/")
                 .build()
                 .toString();

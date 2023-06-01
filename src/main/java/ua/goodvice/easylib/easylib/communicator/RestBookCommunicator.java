@@ -1,13 +1,14 @@
 package ua.goodvice.easylib.easylib.communicator;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ua.goodvice.easylib.easylib.entity.Book;
+import ua.goodvice.easylib.easylib.util.RestAuthUtil;
 
 import java.util.List;
 
@@ -15,16 +16,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestBookCommunicator {
     private final RestTemplate restTemplate;
+    private final RestAuthUtil restAuthUtil;
 
-    public List<Book> getAllBooks() {
-        ResponseEntity<List<Book>> responseEntity = restTemplate.exchange("http://localhost:8080/api/books"
-                , HttpMethod.GET, null, new ParameterizedTypeReference<>() {
+    public List<Book> getAllBooks(HttpServletRequest httpServletRequest) {
+        HttpHeaders headers = restAuthUtil.createHeaders(httpServletRequest);
+        HttpEntity<String> restTemplateRequest = new HttpEntity<>(headers);
+        ResponseEntity<List<Book>> response = restTemplate.exchange("http://localhost:8080/api/books", HttpMethod.GET,
+                restTemplateRequest, new ParameterizedTypeReference<>() {
                 });
-        return responseEntity.getBody();
-    }
-
-    public Book getBookById(int id) {
-        return restTemplate.getForObject("http://localhost:8080/api/books/" + id, Book.class);
+        return response.getBody();
     }
 
     /**
@@ -33,15 +33,12 @@ public class RestBookCommunicator {
      *
      * @param book entity class that contains information about the book
      */
-    public void addBook(Book book) throws JsonProcessingException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    public void addBook(Book book, HttpServletRequest httpServletRequest) {
 
-        ObjectMapper mapper = new ObjectMapper();
-        String postDataJSON = mapper.writeValueAsString(book);
+        HttpHeaders headers = restAuthUtil.createHeaders(httpServletRequest);
+        HttpEntity<Book> restTemplateRequest = new HttpEntity<>(book, headers);
+        restTemplate.postForEntity("http://localhost:8080/api/books", restTemplateRequest, Book.class);
 
-        HttpEntity<String> request = new HttpEntity<>(postDataJSON, headers);
-        String response = restTemplate.postForObject("http://localhost:8080/api/books", request, String.class);
     }
 
 }

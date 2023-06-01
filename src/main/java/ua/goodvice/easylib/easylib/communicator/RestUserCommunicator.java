@@ -1,29 +1,22 @@
 package ua.goodvice.easylib.easylib.communicator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
+import ua.goodvice.easylib.easylib.security.AuthenticationResponse;
+import ua.goodvice.easylib.easylib.util.RestAuthUtil;
 
 @Component
 @RequiredArgsConstructor
 public class RestUserCommunicator {
     private final RestTemplate restTemplate;
+    private final RestAuthUtil restAuthUtil;
 
-    public void login(AuthenticationRequest credentials) throws JsonProcessingException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        ObjectMapper mapper = new ObjectMapper();
-        String postDataJSON = mapper.writeValueAsString(credentials);
-
-        HttpEntity<String> request = new HttpEntity<>(postDataJSON, headers);
-        String response = restTemplate.postForObject("http://localhost:8080/api/auth/authenticate", request, String.class);
-        System.out.println(response);
+    public ResponseEntity<AuthenticationResponse> login(AuthenticationRequest authenticationRequest) {
+        return restTemplate.postForEntity("http://localhost:8080/api/auth/authenticate",
+                authenticationRequest,
+                AuthenticationResponse.class);
     }
 }
