@@ -30,6 +30,7 @@ public class Config implements WebMvcConfigurer {
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
+    
 
     private SpringResourceTemplateResolver templateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();

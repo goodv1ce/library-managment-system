@@ -1,11 +1,9 @@
 package ua.goodvice.easylib.easylib.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +13,7 @@ import ua.goodvice.easylib.easylib.communicator.RestUserCommunicator;
 import ua.goodvice.easylib.easylib.entity.Book;
 import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
 import ua.goodvice.easylib.easylib.security.AuthenticationResponse;
+import ua.goodvice.easylib.easylib.security.RegisterRequest;
 
 @Controller
 @RequestMapping("/")
@@ -41,8 +40,7 @@ public class ViewController {
     }
 
     @PostMapping("/donate")
-    public String addBookAndRedirect(@ModelAttribute Book book, HttpServletRequest httpServletRequest)
-            throws JsonProcessingException {
+    public String addBookAndRedirect(@ModelAttribute Book book, HttpServletRequest httpServletRequest) {
         restBookCommunicator.addBook(book, httpServletRequest);
         return "redirect:/";
     }
@@ -50,22 +48,33 @@ public class ViewController {
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("authenticationRequest", new AuthenticationRequest());
-        return "login-page";
+        model.addAttribute("registerRequest", new RegisterRequest());
+        return "authentication";
     }
 
     @PostMapping("/login")
     public String loginAndRedirect(@ModelAttribute AuthenticationRequest authenticationRequest,
-                                   HttpServletResponse response) {
+                                   HttpServletResponse httpServletResponse) {
         ResponseEntity<AuthenticationResponse> responseEntity =
                 restUserCommunicator.login(authenticationRequest);
-        String cookies = (responseEntity.getHeaders().getFirst(HttpHeaders.SET_COOKIE));
-        String jwt;
-        if (cookies != null) {
-            jwt = cookies.substring(cookies.indexOf("user-id=") + 8, cookies.indexOf(";"));
-        } else {
-            jwt = ""; // todo implement
-        }
-        response.addCookie(new Cookie("user-id", jwt));
+        AuthenticationResponse authenticationResponse = responseEntity.getBody();
+        assert authenticationResponse != null;
+        String jwt = authenticationResponse.getToken();
+        Cookie jwtCookie = new Cookie("user-id", jwt);
+        httpServletResponse.addCookie(jwtCookie);
+        return "redirect:/";
+    }
+
+    @PostMapping("/register")
+    public String register(@ModelAttribute RegisterRequest registerRequest,
+                           HttpServletResponse httpServletResponse) {
+        ResponseEntity<AuthenticationResponse> responseEntity =
+                restUserCommunicator.register(registerRequest);
+        AuthenticationResponse authenticationResponse = responseEntity.getBody();
+        assert authenticationResponse != null;
+        String jwt = authenticationResponse.getToken();
+        Cookie jwtCookie = new Cookie("user-id", jwt);
+        httpServletResponse.addCookie(jwtCookie);
         return "redirect:/";
     }
 }
