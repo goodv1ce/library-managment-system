@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ua.goodvice.easylib.easylib.config.JwtService;
 import ua.goodvice.easylib.easylib.dao.UserRepository;
-import ua.goodvice.easylib.easylib.entity.Role;
+import ua.goodvice.easylib.easylib.entity.enums.user.Role;
 import ua.goodvice.easylib.easylib.entity.User;
 
 @Service
