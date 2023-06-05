@@ -49,7 +49,6 @@ public class ViewController {
     @PostMapping("/donate")
     public String addBookAndRedirect(@ModelAttribute Book book, HttpServletRequest httpServletRequest) {
         restBookCommunicator.addBook(book, httpServletRequest);
-
         return "redirect:/";
     }
 

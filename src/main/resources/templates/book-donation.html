@@ -6,48 +6,45 @@
 </head>
 <body>
 <h2>Donate book</h2>
-<form th:action="@{/donate}" th:object="${book}" method="post">
-    <p>
-        Type: <select th:field="*{type}">
-        <option value=""></option>
-        <option th:each="bookType : ${bookTypes}" th:value="${bookType}" th:text="${bookType}"></option>
-    </select>
-    </p>
-
-    <p>
-        <label>
-            Name: <input type="text" th:field="*{name}"/>
-        </label></p>
-    <p>
-
-        <label>
-            Author: <input type="text" th:field="*{author}"/>
-        </label>
-    </p>
-
-    <p>
-        Genre:
-        <select th:field="*{genre}">
+<form th:action="@{/donate}" th:object="${book}" method="post" class="form">
+    <div class="form-group">
+        <label for="type">Type:</label>
+        <select th:field="*{type}" id="type" required="required">
             <option value=""></option>
-            <option th:each="bookGenre : ${bookGenres}" th:value="${bookGenre}" th:text="${bookGenre}"></option>
+            <option th:each="bookType : ${bookTypes}" th:value="${bookType}" th:text="${bookType}"></option>
         </select>
-    </p>
+    </div>
 
-    <p>
-        Condition:
-        <select th:field="*{condition}">
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" th:field="*{name}" id="name" required="required"/>
+    </div>
+    <div>
+        <label for="author">Author:</label>
+        <input type="text" th:field="*{author}" id="author" required="required"/>
+    </div>
+
+    <div>
+        <label for="genre">Genre:</label>
+        <select th:field="*{genre}" id="genre" required="required">
+            <option value=""></option>
+            <option th:each="bookGenre : ${bookGenres}" th:value="${bookGenre}"
+                    th:text="${bookGenre}">
+        </select>
+    </div>
+
+    <div>
+        <label for="condition">Condition:</label>
+        <select th:field="*{condition}" id="condition" required="required">
             <option value=""></option>
             <option th:each="bookCondition : ${bookConditions}" th:value="${bookCondition}"
                     th:text="${bookCondition}">
-
-            </option>
         </select>
-    </p>
-
-    <p>
+    </div>
+    <div>
         <input type="submit" value="Submit"/>
         <input type="reset" value="Reset">
-    </p>
+    </div>
 </form>
 <button onclick="location.href='/'">Back</button>
 </body>
