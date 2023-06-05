@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Donate book</title>
+</head>
+<body>
+<h2>Donate book</h2>
+<form th:action="@{/donate}" th:object="${book}" method="post">
+    <p>
+        Type: <select th:field="*{type}">
+        <option value=""></option>
+        <option th:each="bookType : ${bookTypes}" th:value="${bookType}" th:text="${bookType}"></option>
+    </select>
+    </p>
+
+    <p>
+        <label>
+            Name: <input type="text" th:field="*{name}"/>
+        </label></p>
+    <p>
+
+        <label>
+            Author: <input type="text" th:field="*{author}"/>
+        </label>
+    </p>
+
+    <p>
+        Genre:
+        <select th:field="*{genre}">
+            <option value=""></option>
+            <option th:each="bookGenre : ${bookGenres}" th:value="${bookGenre}" th:text="${bookGenre}"></option>
+        </select>
+    </p>
+
+    <p>
+        Condition:
+        <select th:field="*{condition}">
+            <option value=""></option>
+            <option th:each="bookCondition : ${bookConditions}" th:value="${bookCondition}"
+                    th:text="${bookCondition}">
+
+            </option>
+        </select>
+    </p>
+
+    <p>
+        <input type="submit" value="Submit"/>
+        <input type="reset" value="Reset">
+    </p>
+</form>
+<button onclick="location.href='/'">Back</button>
+</body>
+</html>

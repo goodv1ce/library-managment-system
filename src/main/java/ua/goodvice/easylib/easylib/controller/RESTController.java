@@ -1,15 +1,20 @@
 package ua.goodvice.easylib.easylib.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ua.goodvice.easylib.easylib.entity.Book;
 import ua.goodvice.easylib.easylib.service.BookService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * REST Controller
- * Contains methods that interact with database via entity classes
+ * REST controller
  *
  * @author goodvice
  * @version 1.0
@@ -18,16 +23,12 @@ import java.util.List;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class RESTController {
-    /**
-     * Autowired book service class.
-     * Contains main functionality of interacting with database
-     */
     private final BookService bookService;
 
     /**
-     * Returns all books that are in the database
+     * Getting all books
      *
-     * @return List of Book objects in JSON format
+     * @return list of book entities
      */
     @GetMapping("/books")
     public List<Book> showAllBooks() {
@@ -35,10 +36,10 @@ public class RESTController {
     }
 
     /**
-     * Returns book by id from database
+     * Getting book by id
      *
      * @param id book id
-     * @return Information about the book in JSON format
+     * @return book entity
      */
     @GetMapping("/books/{id}")
     public Book getBook(@PathVariable int id) {
@@ -46,42 +47,50 @@ public class RESTController {
     }
 
     /**
-     * Adds new book in the database
-     * Book object is generated from the JSON from HTTP request body
-     * 'id' and 'date-added' properties are ignored if present
+     * Adding a new book
      *
-     * @param book Book object
-     * @return Book object in the JSON format after adding
+     * @param book book entity from request body
+     * @return added book entity
      */
     @PostMapping("/books")
-    public Book addNewBook(@RequestBody Book book) {
+    public Book addNewBook(@Valid @RequestBody Book book) {
         bookService.saveBook(book);
         return book;
     }
 
     /**
-     * Updating information about the book in the database
-     * New information takes from JSON in HTTP request body
-     * Which book needs to be updated becomes known by the 'id' property
+     * Updating the book
      *
-     * @param book Book object
-     * @return Book object in the JSON format after updating
+     * @param book book entity from body
+     * @return updated book entity
      */
     @PutMapping("/books")
-    public Book updateBook(@RequestBody Book book) {
+    public Book updateBook(@Valid @RequestBody Book book) {
         bookService.saveBook(book);
         return book;
     }
 
     /**
-     * Deleting book from database by id
+     * Deleting book
      *
-     * @param id book id that is needed to be deleted
-     * @return String object with information about successful deleting book with some id
+     * @param id book id
+     * @return message about success deleting
      */
     @DeleteMapping("/books/{id}")
     public String deleteBook(@PathVariable int id) {
         bookService.deleteBook(id);
         return "Book with ID = " + id + " was deleted!";
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        Map<String, String> errors = new HashMap<>();
+        exception.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
     }
 }

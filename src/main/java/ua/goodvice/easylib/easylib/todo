@@ -1,0 +1,4 @@
+3. drop-down menus for book choosing
+4. enumerated fields in db (condition for example)
+validati on in entity class @notblank
+redirect when forbidden to login page
