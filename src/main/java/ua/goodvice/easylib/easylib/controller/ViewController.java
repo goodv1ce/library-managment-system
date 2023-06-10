@@ -67,8 +67,6 @@ public class ViewController {
         AuthenticationResponse authenticationResponse = responseEntity.getBody();
         assert authenticationResponse != null;
         String jwt = authenticationResponse.getToken();
-//        Cookie jwtCookie = new Cookie("user-id", jwt);
-//        httpServletResponse.addCookie(jwtCookie);
         httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtService.generateJwtTokenCookie(jwt));
         return "redirect:/";
     }

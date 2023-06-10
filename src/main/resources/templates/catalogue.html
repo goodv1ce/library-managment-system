@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Catalogue</title>
-    <link rel="stylesheet" th:href="@{styles/catalogue-style.css}" />
+    <link rel="stylesheet" th:href="@{styles/catalogue-style.css}"/>
 </head>
 <body>
 
@@ -18,7 +18,9 @@
             <p th:text="'Author: ' + ${book.author}">Author</p>
             <p th:text="'Genre:' + ${book.genre}">Genre</p>
             <span th:text="'Date added: ' + ${book.dateAdded}">Date added</span>
-            <button class="borrow-btn">Borrow</button>
+            <form th:action="@{/api/issue/{id}(id = ${book.id})}" method="post">
+                <button class="borrow-btn">Borrow</button>
+            </form>
         </div>
     </div>
 </div>

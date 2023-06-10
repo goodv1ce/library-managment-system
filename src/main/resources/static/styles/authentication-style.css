@@ -78,7 +78,7 @@ button:hover {
 .login {
     height: 490px;
     background: #eee;
-    border-radius: 60% / 10%;
+    border-radius: 60% / 7.5%;
     transform: translateY(-165px);
     transition: .8s ease-in-out;
 }

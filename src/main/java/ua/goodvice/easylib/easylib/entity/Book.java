@@ -21,8 +21,7 @@ public class Book {
     private int id;
 
     @Column(name = "type")
-    @NotBlank(message = "Type is mandatory!" +
-            " ")
+    @NotBlank(message = "Type is mandatory!")
     private String type;
 
     @Column(name = "name")

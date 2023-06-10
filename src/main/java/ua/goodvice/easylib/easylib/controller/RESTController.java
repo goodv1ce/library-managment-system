@@ -3,15 +3,19 @@ package ua.goodvice.easylib.easylib.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import ua.goodvice.easylib.easylib.config.JwtService;
 import ua.goodvice.easylib.easylib.entity.Book;
 import ua.goodvice.easylib.easylib.service.BookService;
+import ua.goodvice.easylib.easylib.service.UserBookRelationService;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * REST controller
@@ -24,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RESTController {
     private final BookService bookService;
+    private final UserBookRelationService userBookRelationService;
 
     /**
      * Getting all books
@@ -80,6 +85,16 @@ public class RESTController {
     public String deleteBook(@PathVariable int id) {
         bookService.deleteBook(id);
         return "Book with ID = " + id + " was deleted!";
+    }
+
+    @PostMapping("/issue/{bookId}")
+    public String issueBook(@PathVariable int bookId,
+                            @CookieValue(name = "user-id", defaultValue = "null") String jwt) {
+        if (Objects.equals(jwt, "null")) {
+            throw new AccessDeniedException("Bad JSON Web Token");
+        }
+        userBookRelationService.addRelation(jwt, bookId);
+        return "Relation was added!";
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
