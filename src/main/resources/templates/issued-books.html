@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Catalogue</title>
-    <link rel="stylesheet" th:href="@{styles/catalogue-style.css}"/>
+    <title>Issued books</title>
+    <link rel="stylesheet" type="text/css" th:href="@{../styles/catalogue-style.css}"/>
 </head>
 <body>
 
 <div class="container">
-    <h1>Book catalogue</h1>
+    <h1>Issued books</h1>
     <div class="book" th:each="book : ${bookList}">
         <div class="icon">
             <img th:src="@{/resources/images/book-icon.png}" alt="" src=""/>
@@ -18,9 +18,9 @@
             <p th:text="'Author: ' + ${book.author}">Author</p>
             <p th:text="'Genre:' + ${book.genre}">Genre</p>
             <span th:text="'Date added: ' + ${book.dateAdded}">Date added</span>
-            <form th:action="@{/issue/{id}(id = ${book.id})}" method="post">
-                <button class="borrow-btn">Borrow</button>
-            </form>
+            <!--            <form th:action="" method="">-->
+            <button class="borrow-btn">Download</button>
+            <!--            </form>-->
         </div>
     </div>
 </div>

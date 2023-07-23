@@ -5,6 +5,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +19,9 @@ import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
 import ua.goodvice.easylib.easylib.security.AuthenticationResponse;
 import ua.goodvice.easylib.easylib.security.RegisterRequest;
 import ua.goodvice.easylib.easylib.service.BookService;
+import ua.goodvice.easylib.easylib.service.UserBookRelationService;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/")
@@ -25,6 +31,7 @@ public class ViewController {
     private final RestUserCommunicator restUserCommunicator;
     private final BookService bookService;
     private final JwtService jwtService;
+    private final UserBookRelationService userBookRelationService;
 
     @GetMapping("/")
     public String showStartPage() {
@@ -54,16 +61,19 @@ public class ViewController {
 
     @GetMapping("/login")
     public String showLoginPage(Model model) {
-        model.addAttribute("authenticationRequest", new AuthenticationRequest());
-        model.addAttribute("registerRequest", new RegisterRequest());
-        return "authentication";
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            model.addAttribute("authenticationRequest", new AuthenticationRequest());
+            model.addAttribute("registerRequest", new RegisterRequest());
+            return "authentication";
+        }
+        return "redirect:/";
     }
 
     @PostMapping("/login")
-    public String loginAndRedirect(@ModelAttribute AuthenticationRequest authenticationRequest,
-                                   HttpServletResponse httpServletResponse) {
-        ResponseEntity<AuthenticationResponse> responseEntity =
-                restUserCommunicator.login(authenticationRequest);
+    public String loginAndRedirect(@ModelAttribute AuthenticationRequest authenticationRequest, HttpServletResponse httpServletResponse) {
+        ResponseEntity<AuthenticationResponse> responseEntity = restUserCommunicator.login(authenticationRequest);
         AuthenticationResponse authenticationResponse = responseEntity.getBody();
         assert authenticationResponse != null;
         String jwt = authenticationResponse.getToken();
@@ -72,16 +82,25 @@ public class ViewController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute RegisterRequest registerRequest,
-                           HttpServletResponse httpServletResponse) {
-        ResponseEntity<AuthenticationResponse> responseEntity =
-                restUserCommunicator.register(registerRequest);
+    public String register(@ModelAttribute RegisterRequest registerRequest, HttpServletResponse httpServletResponse) {
+        ResponseEntity<AuthenticationResponse> responseEntity = restUserCommunicator.register(registerRequest);
         AuthenticationResponse authenticationResponse = responseEntity.getBody();
         assert authenticationResponse != null;
         String jwt = authenticationResponse.getToken();
-//        Cookie jwtCookie = new Cookie("user-id", jwt);
-//        httpServletResponse.addCookie(jwtCookie);
         httpServletResponse.addHeader(HttpHeaders.SET_COOKIE, jwtService.generateJwtTokenCookie(jwt));
         return "redirect:/";
+    }
+
+    @GetMapping("/profile/books")
+    public String issuedBooks(@CookieValue(name = "user-id", defaultValue = "null") String jwt, HttpServletRequest httpServletRequest, Model model) {
+        List<Book> books = userBookRelationService.getIssuedBooks(jwt);
+        model.addAttribute("bookList", books);
+        return "issued-books";
+    }
+
+    @PostMapping("/issue/{bookId}")
+    public String issueBook(@PathVariable int bookId, @CookieValue(name = "user-id", defaultValue = "null") String jwt) {
+        userBookRelationService.addRelation(jwt, bookId);
+        return "redirect:/profile/books";
     }
 }
