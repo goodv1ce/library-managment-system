@@ -6,7 +6,7 @@
 </head>
 <body>
 <h2>Login</h2>
-<form th:action="@{/login}" th:object="${authenticationRequest}" method="post">
+<form th:action="@{/authenticate}" th:object="${authenticationRequest}" method="post">
     <p>
         <label>
             Email: <input type="text" th:field="*{email}"/>
@@ -22,6 +22,5 @@
         <input type="reset" value="Reset">
     </p>
 </form>
-<button onclick="location.href='/'">Back</button>
 </body>
 </html>

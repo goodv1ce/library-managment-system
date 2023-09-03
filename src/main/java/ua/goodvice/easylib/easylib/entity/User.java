@@ -29,15 +29,21 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "firstname")
+
+    @Column(name = "user_firstname")
     private String firstname;
-    @Column(name = "lastname")
+
+    @Column(name = "user_lastname")
     private String lastname;
-    @Column(name = "email")
+
+    @Column(name = "user_email")
     private String email;
-    @Column(name = "password")
+
+    @Column(name = "user_password")
     private String password;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     private Role role;
 
     @Override

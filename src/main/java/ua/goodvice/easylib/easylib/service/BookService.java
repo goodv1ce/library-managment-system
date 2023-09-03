@@ -21,7 +21,7 @@ public class BookService {
     
     public void saveBook(Book book) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        book.setDate_added(dateFormatter.format(new Date()));
+        book.setDateAdded(dateFormatter.format(new Date()));
         bookRepository.save(book);
     }
     

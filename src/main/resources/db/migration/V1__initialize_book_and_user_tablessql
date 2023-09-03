@@ -1,0 +1,25 @@
+CREATE TABLE book
+(
+    `book_id`        INT          NOT NULL AUTO_INCREMENT,
+    `book_type`      VARCHAR(255) NOT NULL,
+    `book_genre`     VARCHAR(255) NOT NULL,
+    `book_name`      VARCHAR(255) NOT NULL,
+    `book_author`    VARCHAR(255) NOT NULL,
+    `book_condition` VARCHAR(255) NOT NULL,
+    `book_add_date`  VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`book_id`),
+    UNIQUE INDEX `book_id_UNIQUE` (`book_id` ASC) VISIBLE
+);
+
+CREATE TABLE user
+(
+    `user_id`        INT          NOT NULL AUTO_INCREMENT,
+    `user_email`     VARCHAR(255) NOT NULL,
+    `user_password`  VARCHAR(255) NOT NULL,
+    `user_firstname` VARCHAR(255) NOT NULL,
+    `user_lastname`  VARCHAR(255) NOT NULL,
+    `user_role`      VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`user_id`),
+    UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE,
+    UNIQUE INDEX `user_email_UNIQUE` (`user_email` ASC) VISIBLE
+);
