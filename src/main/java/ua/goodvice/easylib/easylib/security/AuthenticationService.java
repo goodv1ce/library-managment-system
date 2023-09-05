@@ -20,6 +20,9 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
+        if (repository.existsUserByEmail(request.getEmail())) {
+            return AuthenticationResponse.builder().token(null).build();
+        }
         var user = User.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())

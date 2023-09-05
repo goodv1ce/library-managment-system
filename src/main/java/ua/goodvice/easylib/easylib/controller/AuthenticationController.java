@@ -2,6 +2,7 @@ package ua.goodvice.easylib.easylib.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ua.goodvice.easylib.easylib.config.JwtService;
@@ -9,6 +10,8 @@ import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
 import ua.goodvice.easylib.easylib.security.AuthenticationResponse;
 import ua.goodvice.easylib.easylib.security.AuthenticationService;
 import ua.goodvice.easylib.easylib.security.RegisterRequest;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,12 +32,23 @@ public class AuthenticationController {
             @RequestBody RegisterRequest request
     ) {
         AuthenticationResponse response = service.register(request);
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, jwtService.generateJwtTokenCookie(response.getToken()))
-                .build();
+        if (Objects.isNull(response.getToken())) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } else {
+            return ResponseEntity
+                    .ok()
+                    .header(HttpHeaders.SET_COOKIE, jwtService.generateJwtTokenCookie(response.getToken()))
+                    .build();
+        }
+
     }
 
+    /**
+     * User authentication endpoint
+     *
+     * @param request JSON from request body
+     * @return response with status 200 with JWT in cookie in header
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authentication(
             @RequestBody AuthenticationRequest request
