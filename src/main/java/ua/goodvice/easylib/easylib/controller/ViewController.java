@@ -15,6 +15,7 @@ import ua.goodvice.easylib.easylib.communicator.RestUserCommunicator;
 import ua.goodvice.easylib.easylib.entity.Book;
 import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
 import ua.goodvice.easylib.easylib.security.AuthenticationResponse;
+import ua.goodvice.easylib.easylib.security.RegisterRequest;
 
 @Controller
 @RequestMapping("/")
@@ -41,8 +42,7 @@ public class ViewController {
     }
 
     @PostMapping("/donate")
-    public String addBookAndRedirect(@ModelAttribute Book book, HttpServletRequest httpServletRequest)
-            throws JsonProcessingException {
+    public String addBookAndRedirect(@ModelAttribute Book book, HttpServletRequest httpServletRequest) {
         restBookCommunicator.addBook(book, httpServletRequest);
         return "redirect:/";
     }
@@ -68,4 +68,26 @@ public class ViewController {
         response.addCookie(new Cookie("user-id", jwt));
         return "redirect:/";
     }
+
+    @GetMapping("/register")
+    public String showRegisterPage(Model model) {
+        model.addAttribute("registerRequest", new RegisterRequest());
+        return "register-page";
+    }
+
+    @PostMapping("/register")
+    public String registerAndRedirect(@ModelAttribute RegisterRequest registerRequest,
+                                      HttpServletResponse response) {
+        ResponseEntity<AuthenticationResponse> responseEntity = restUserCommunicator.register(registerRequest);
+        String cookies = (responseEntity.getHeaders().getFirst(HttpHeaders.SET_COOKIE));
+        String jwt;
+        if (cookies != null) {
+            jwt = cookies.substring(cookies.indexOf("user-id=") + 8, cookies.indexOf(";"));
+        } else {
+            jwt = ""; // todo implement
+        }
+        response.addCookie(new Cookie("user-id", jwt));
+        return "redirect:/";
+    }
+
 }

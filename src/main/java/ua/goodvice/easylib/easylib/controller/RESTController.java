@@ -46,12 +46,10 @@ public class RESTController {
     }
 
     /**
-     * Adds new book in the database
-     * Book object is generated from the JSON from HTTP request body
-     * 'id' and 'date-added' properties are ignored if present
+     * Adding a new book
      *
-     * @param book Book object
-     * @return Book object in the JSON format after adding
+     * @param book Book POJO
+     * @return JSON of the added book
      */
     @PostMapping("/books")
     public Book addNewBook(@RequestBody Book book) {

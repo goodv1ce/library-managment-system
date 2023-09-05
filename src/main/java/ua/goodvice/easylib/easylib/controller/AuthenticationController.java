@@ -3,10 +3,7 @@ package ua.goodvice.easylib.easylib.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ua.goodvice.easylib.easylib.config.JwtService;
 import ua.goodvice.easylib.easylib.security.AuthenticationRequest;
 import ua.goodvice.easylib.easylib.security.AuthenticationResponse;
@@ -21,6 +18,12 @@ public class AuthenticationController {
     private final AuthenticationService service;
     private final JwtService jwtService;
 
+    /**
+     * User registration endpoint
+     *
+     * @param request JSON from request body
+     * @return response with status 200 with JWT in cookie in header
+     */
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
@@ -29,7 +32,7 @@ public class AuthenticationController {
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, jwtService.generateJwtTokenCookie(response.getToken()))
-                .body(response);
+                .build();
     }
 
     @PostMapping("/authenticate")
